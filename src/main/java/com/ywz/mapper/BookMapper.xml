@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ywz.mapper.BookMapper">
+    <select id="showAllBook" resultType="Book">
+        select * from tb_book
+    </select>
+   <select id="showBook" resultType="Book">
+       select * from tb_book
+       <where>
+           <if test="borrowers != '' and borrowers != null">
+               and borrowers = #{borrowers}
+           </if>
+
+           <if test="name != '' and name != null">
+               and name = #{name}
+           </if>
+
+           <if test="operations != '' and operations  != null">
+               and operations = #{operations}
+           </if>
+       </where>
+   </select>
+    <select id="updateBook" resultType="Integer">
+        UPDATE tb_book set operations=#{operations} where id=#{id}
+    </select>
+</mapper>

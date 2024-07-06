@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        * {
+            left: 0px;
+            top: 0px;
+        }
+
+        .sel {
+            border: 0;
+            background: #EFEFEF;
+            border-radius: 10px;
+        }
+
+        #div01 {
+            position: absolute;
+            left: auto;
+            margin: 10px;
+            border: white;
+
+        }
+
+        .btn {
+            border-radius: 6px;
+        }
+
+        #div02 {
+            background: #EFEFEF;
+            border:5px;
+        }
+
+        #form01{
+            font-size: 15px;
+            font-weight: 100;
+        }
+
+        #tb{
+            text-align: center;
+
+        }
+        td{
+            background: #ffffff;
+            padding: 6px;
+        }
+        form{}
+
+        .blue-text {
+            color: #007bff;
+        }
+
+        .red-text {
+            color: #dc3545;
+        }
+    </style>
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript">
+        function change(operations){
+            if (operations =='借阅'){
+                //更新文本
+                operations.text(归还)
+                //设置样式
+                operations.addClass('.red-text ')
+            }else if  (operations =='归还'){
+                //更新文本
+                operations.text(借阅)
+                //设置样式
+                operations.addClass('.blue-text ')
+            }
+        }
+        $(function () {
+            // 页面加载时的请求
+            $.post("ywz", function (result) {
+                $("#tbody").empty();
+                // 首先检查是否能够正确接收到数据
+                console.log(result); // 确保服务端返回的数据是预期的 JSON 格式
+
+                $.each(result, function (i, e) {
+
+                    var colorClass = '';
+                    if (e.operations === '借阅') {
+                        colorClass = 'blue-text';
+                    } else if (e.operations === '归还') {
+                        colorClass = 'red-text';
+                    }
+
+                    // 在tbody中追加tr
+                    $("#tbody").append('<tr>\n' +
+                        ' <td style="text-align:center; padding-left:20px;">' + e.id + '</td>\n' +
+                        ' <td>' + e.name + '</td>\n' +
+                        ' <td>' + e.bst + '</td>\n' +
+                        ' <td>' + e.bet + '</td>\n' +
+                        ' <td>' + e.borrowers + '</td>\n' +
+                        ' <td>' + e.state + '</td>\n' +
+                        ' <td onclick="change('+e.operations+')" class="' + colorClass + '">' + e.operations + '</td>\n' +
+                        '</tr>');
+                });
+            }, "json"),
+                $("#btn").click(function () {
+                var date = $("form").serialize();
+                console.log(date)
+                //异步
+                $.post("ywz",date, function (result) {
+                    $("#tbody").empty();
+                    console.log(result)
+                    $.each(result, function (i, e) {
+
+                        var colorClass = '';
+                        if (e.operations === '借阅') {
+                            colorClass = 'blue-text';
+                        } else if (e.operations === '归还') {
+                            colorClass = 'red-text';
+                        }
+
+                        // 在tbody中追加tr
+                        $("#tbody").append('<tr>\n' +
+                            ' <td style="text-align:center; padding-left:20px;">' + e.id + '</td>\n' +
+                            ' <td>' + e.name + '</td>\n' +
+                            ' <td>' + e.bst + '</td>\n' +
+                            ' <td>' + e.bet + '</td>\n' +
+                            ' <td>' + e.borrowers + '</td>\n' +
+                            ' <td>' + e.state + '</td>\n' +
+                            ' <td onclick="change('+e.operations+')" class="' + colorClass + '">' + e.operations + '</td>\n' +
+                            '</tr>');
+                    });
+                }, "json")
+
+            }),$("#reset").click(function (result) {
+                $("#tbody").empty();
+                // 首先检查是否能够正确接收到数据
+                console.log(result);
+
+                $.each(result, function (i, e) {
+
+                    var colorClass = '';
+                    if (e.operations === '借阅') {
+                        colorClass = 'blue-text';
+                    } else if (e.operations === '归还') {
+                        colorClass = 'red-text';
+                    }
+
+                    // 在tbody中追加tr
+                    $("#tbody").append('<tr>\n' +
+                        ' <td style="text-align:center; padding-left:20px;">' + e.id + '</td>\n' +
+                        ' <td>' + e.name + '</td>\n' +
+                        ' <td>' + e.bst + '</td>\n' +
+                        ' <td>' + e.bet + '</td>\n' +
+                        ' <td>' + e.borrowers + '</td>\n' +
+                        ' <td>' + e.state + '</td>\n' +
+                        ' <td onclick="change('+e.operations+')" class="' + colorClass + '">' + e.operations + '</td>\n' +
+                        '</tr>');
+                });
+            },"json")
+        });
+    </script>
+
+
+</head>
+<body>
+<div id="div01" >
+    <form method="post">
+        <h3>借阅管理</h3><br>
+        <input type="hidden" class="sel" name="id" placeholder="请输入借阅人名称">
+        <label>借阅人：</label>&nbsp;<input type="text" class="sel" placeholder="请输入借阅人名称" name="borrowers"> <span
+            style="width:100px; display:inline-block"></span>
+        <label>图书名称：</label>&nbsp;<input type="text" class="sel" placeholder="请输入图书名称" style="left: 30px;" name="name"/>
+        <span style="width:100px; display:inline-block"></span>
+        <label>借阅状态：</label>&nbsp;<select name="city">
+        <option selected >-全部-</option>
+        <option value="借阅" name="operations">借阅</option>
+        <option value="归还" name="operations">归还</option>
+        </select><br><br>
+        <label>借阅时间 </label>&nbsp;<input type="date" class="input" name="borrowstarttime" value=""
+                                             style="width:20%"/> &nbsp; 至 &nbsp; <input type="date" class="input"
+                                                                                         name="borrowendtime" value=""
+                                                                                         style="width:20%"/>
+        <span style="width:300px; display:inline-block"></span><input type="button" value="查询" id="btn" style="background:darkblue;" class="btn">
+        <input type="reset" id="reset" value="重置" style="background:#EFEFEF" class="btn">
+        <br> <br>
+        <div id="div02">
+            <table id="tb">
+                <tr id="form01">
+                    <th width="200" style="text-align:left; ">图书ID</th>
+                    <th width="10%">图书名称</th>
+                    <th width="20%">借阅时间</th>
+                    <th width="20%">归还时间</th>
+                    <th width="15%">借阅人</th>
+                    <th width="10%">借阅状态</th>
+                    <th width="310">操作</th>
+                </tr>
+                <tbody id="tbody"></tbody>
+                <tbody>
+
+               <!--  使用 Thymeleaf 迭代表达式遍历 books 列表
+                <tr th:each="book : ${books}" id="tb" >
+                    <td th:text="${book.id}">1</td>
+                    <td th:text="${book.name}">Book Title</td>
+                    <td th:text="${book.bst}">Author Name</td>
+                    <td th:text="${book.bet}">1234567890</td>
+                    <td th:text="${book.borrowers}">Author Name</td>
+                    <td th:text="${book.state}">1234567890</td>
+                    <td th:text="${book.operations}">Author Name</td>
+                </tr>-->
+                </tbody>
+
+            </table>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
